@@ -577,135 +577,100 @@ limit 24
         if (startDate && endDate) {
             // oci1
             oci1 = await iot_oci1.query(`
-            SELECT 
-            mp.tgl,
-            mp.lotno,
-            mp.prod_order,
-            mp.product,
-            UNIX_TIMESTAMP(date_format((mp.prod_start),'%Y-%m-%d %H:%i:%s')) as prod_start,
-            (
-                select datediff(
-                    (select 
-                    IF(COUNT(id) = 0, now(), created_at) as created_at
-                      FROM tr_perilisan_h
-                      where prod_order = mp.prod_order), from_unixtime(UNIX_TIMESTAMP(date_format((mp.prod_start),'%Y-%m-%d %H:%i:%s'))) 
-                )	
-            ) as day_release
-        FROM 
-            mst_prodidentity mp
-        where mp.tgl >= '${startDate}' and mp.tgl <= '${endDate}'
-        order by mp.tgl desc
+            select 
+	lotno,
+	prod_order,
+	product,
+	date_format(prod_start, '%Y-%m-%d') as tanggal, 
+	datediff(
+		if(count(id) = 0, now(), created_at), from_unixtime(UNIX_TIMESTAMP(date_format((prod_start),'%Y-%m-%d %H:%i:%s')))
+	) as day_release
+	from tr_perilisan_h 
+	where date_format(prod_start, '%Y-%m-%d') >= '${startDate}' and date_format(prod_start, '%Y-%m-%d') <= '${endDate}'
+	group by prod_order
+	order by date_format(prod_start, '%Y-%m-%d') desc
+	
             `);
 
         // oci2
         oci2 = await iot_oci2.query(`
-            SELECT 
-            mp.tgl,
-            mp.lotno,
-            mp.prod_order,
-            mp.product,
-            UNIX_TIMESTAMP(date_format((mp.prod_start),'%Y-%m-%d %H:%i:%s')) as prod_start,
-            (
-                select datediff(
-                    (select 
-                    IF(COUNT(id) = 0, now(), created_at) as created_at
-                      FROM tr_perilisan_h
-                      where prod_order = mp.prod_order), from_unixtime(UNIX_TIMESTAMP(date_format((mp.prod_start),'%Y-%m-%d %H:%i:%s'))) 
-                )	
-            ) as day_release
-        FROM 
-            mst_prodidentity mp
-        where mp.tgl >= '${startDate}' and mp.tgl <= '${endDate}'
-        order by mp.tgl desc
+        select 
+        lotno,
+        prod_order,
+        product,
+        date_format(prod_start, '%Y-%m-%d') as tanggal, 
+        datediff(
+            if(count(id) = 0, now(), created_at), from_unixtime(UNIX_TIMESTAMP(date_format((prod_start),'%Y-%m-%d %H:%i:%s')))
+        ) as day_release
+        from tr_perilisan_h 
+        where date_format(prod_start, '%Y-%m-%d') >= '${startDate}' and date_format(prod_start, '%Y-%m-%d') <= '${endDate}'
+        group by prod_order
+        order by date_format(prod_start, '%Y-%m-%d') desc
             `);
 
         // fsb
         fsb = await iot_fsb.query(`
-            SELECT 
-            mp.tgl,
-            mp.lotno,
-            mp.prod_order,
-            mp.product,
-            UNIX_TIMESTAMP(date_format((mp.prod_start),'%Y-%m-%d %H:%i:%s')) as prod_start,
-            (
-                select datediff(
-                    (select 
-                    IF(COUNT(id) = 0, now(), created_at) as created_at
-                      FROM tr_perilisan_h
-                      where prod_order = mp.prod_order), from_unixtime(UNIX_TIMESTAMP(date_format((mp.prod_start),'%Y-%m-%d %H:%i:%s'))) 
-                )	
-            ) as day_release
-        FROM 
-            mst_prodidentity mp
-        where mp.tgl >= '${startDate}' and mp.tgl <= '${endDate}'
-        order by mp.tgl desc
+        select 
+        lotno,
+        prod_order,
+        product,
+        date_format(prod_start, '%Y-%m-%d') as tanggal, 
+        datediff(
+            if(count(id) = 0, now(), created_at), from_unixtime(UNIX_TIMESTAMP(date_format((prod_start),'%Y-%m-%d %H:%i:%s')))
+        ) as day_release
+        from tr_perilisan_h 
+        where date_format(prod_start, '%Y-%m-%d') >= '${startDate}' and date_format(prod_start, '%Y-%m-%d') <= '${endDate}'
+        group by prod_order
+        order by date_format(prod_start, '%Y-%m-%d') desc
             `);
         }
         else {
              // oci1
              oci1 = await iot_oci1.query(`
-             SELECT 
-             mp.tgl,
-             mp.lotno,
-             mp.prod_order,
-             mp.product,
-             UNIX_TIMESTAMP(date_format((mp.prod_start),'%Y-%m-%d %H:%i:%s')) as prod_start,
-             (
-                 select datediff(
-                     (select 
-                     IF(COUNT(id) = 0, now(), created_at) as created_at
-                       FROM tr_perilisan_h
-                       where prod_order = mp.prod_order), from_unixtime(UNIX_TIMESTAMP(date_format((mp.prod_start),'%Y-%m-%d %H:%i:%s'))) 
-                 )	
-             ) as day_release
-         FROM 
-             mst_prodidentity mp
-         where mp.tgl >= CURDATE() - INTERVAL 30 day
-         order by mp.tgl desc
+             select 
+	lotno,
+	prod_order,
+	product,
+	date_format(prod_start, '%Y-%m-%d') as tanggal, 
+	datediff(
+		if(count(id) = 0, now(), created_at), from_unixtime(UNIX_TIMESTAMP(date_format((prod_start),'%Y-%m-%d %H:%i:%s')))
+	) as day_release
+	from tr_perilisan_h
+	group by prod_order 
+	order by prod_start desc 
+	limit 20
              `);
  
          // oci2
          oci2 = await iot_oci2.query(`
-             SELECT 
-             mp.tgl,
-             mp.lotno,
-             mp.prod_order,
-             mp.product,
-             UNIX_TIMESTAMP(date_format((mp.prod_start),'%Y-%m-%d %H:%i:%s')) as prod_start,
-             (
-                 select datediff(
-                     (select 
-                     IF(COUNT(id) = 0, now(), created_at) as created_at
-                       FROM tr_perilisan_h
-                       where prod_order = mp.prod_order), from_unixtime(UNIX_TIMESTAMP(date_format((mp.prod_start),'%Y-%m-%d %H:%i:%s'))) 
-                 )	
-             ) as day_release
-         FROM 
-             mst_prodidentity mp
-         where mp.tgl >= CURDATE() - INTERVAL 30 day
-         order by mp.tgl desc
+         select 
+         lotno,
+         prod_order,
+         product,
+         date_format(prod_start, '%Y-%m-%d') as tanggal, 
+         datediff(
+             if(count(id) = 0, now(), created_at), from_unixtime(UNIX_TIMESTAMP(date_format((prod_start),'%Y-%m-%d %H:%i:%s')))
+         ) as day_release
+         from tr_perilisan_h
+         group by prod_order 
+         order by prod_start desc 
+         limit 20
              `);
  
          // fsb
          fsb = await iot_fsb.query(`
-             SELECT 
-             mp.tgl,
-             mp.lotno,
-             mp.prod_order,
-             mp.product,
-             UNIX_TIMESTAMP(date_format((mp.prod_start),'%Y-%m-%d %H:%i:%s')) as prod_start,
-             (
-                 select datediff(
-                     (select 
-                     IF(COUNT(id) = 0, now(), created_at) as created_at
-                       FROM tr_perilisan_h
-                       where prod_order = mp.prod_order), from_unixtime(UNIX_TIMESTAMP(date_format((mp.prod_start),'%Y-%m-%d %H:%i:%s'))) 
-                 )	
-             ) as day_release
-         FROM 
-             mst_prodidentity mp
-         where mp.tgl >= CURDATE() - INTERVAL 30 day
-         order by mp.tgl desc
+         select 
+         lotno,
+         prod_order,
+         product,
+         date_format(prod_start, '%Y-%m-%d') as tanggal, 
+         datediff(
+             if(count(id) = 0, now(), created_at), from_unixtime(UNIX_TIMESTAMP(date_format((prod_start),'%Y-%m-%d %H:%i:%s')))
+         ) as day_release
+         from tr_perilisan_h
+         group by prod_order 
+         order by prod_start desc 
+         limit 20
              `);
         }
 
