@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const { node_redDB } = require("../config/connection");
+const { iot_oci1 } = require("../config/connection");
 const TelegramBot = require("node-telegram-bot-api");
 
 // Telegram bot configuration
@@ -14,22 +14,26 @@ function sendNotification(chatId, message) {
     bot.sendMessage(chatId, message);
 }
 
+module.exports = {
+    bpdBot: async (req, res) => {
+        try {
+            const { min, date, line } = req.body;
+            console.log(min, date, line);
 
+            sendNotification(chatId, `\nDate: ${date} \nMin: ${min} \n\nBPD ${line} mendekati batas minimum!`);
 
-
-cron.schedule("*/5 * * * * *", async () => {
-    const result = await node_redDB.query(
-        "SELECT * FROM `tb_inspection` WHERE `status` = '0'"
-    );
-
-    result.then((data) => {
-        if (data[0].length > 0) {
-            sendNotification(chatId, "Ada inspeksi baru nih!");
+            res.status(200).json({
+                message: "Send Notification Success",
+            });
+            
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                message: "Get All Data BPD OC1 Failed",
+            });
         }
+    }
 
-        console.log(data[0]);
-    })
-    // sendNotification(chatId, "Hello, world!");
+}
 
-});
 

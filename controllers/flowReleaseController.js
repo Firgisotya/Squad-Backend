@@ -1,4 +1,4 @@
-const { sequelize } = require("../models");
+const { VFlow } = require("../models/server947/flowoci1x");
 const { iot_oci1 } = require("../config/connection");
 const { iot_oci2 } = require("../config/connection");
 const { iot_fsb } = require("../config/connection");
@@ -35,7 +35,7 @@ module.exports = {
           SELECT
               lotno,
               CASE
-                  WHEN (b.name = 'ALVIN JAUHAR AL KHOIR') THEN 0
+                  WHEN (a.job_owner = '1255') THEN 0
                   ELSE -1
               END AS simpulan
           FROM
@@ -43,14 +43,14 @@ module.exports = {
           JOIN
               v_employee b ON a.job_owner = b.nik
           WHERE 
-              a.tgl_proses IS NOT NULL AND b.name = 'ALVIN JAUHAR AL KHOIR'
+              a.tgl_proses IS NOT NULL AND a.job_owner = '1255'
       ) mikro ON a.lotno = mikro.lotno
   LEFT JOIN 
       (
           SELECT
               lotno,
               CASE
-                  WHEN (b.name = 'HARY AGUSTIAWAN') THEN 0
+                  WHEN (a.job_owner = '1892') THEN 0
                   ELSE -1
               END AS simpulan
           FROM
@@ -58,7 +58,7 @@ module.exports = {
           JOIN
               v_employee b ON a.job_owner = b.nik
           WHERE 
-              a.tgl_proses IS NOT NULL AND b.name = 'HARY AGUSTIAWAN'
+              a.tgl_proses IS NOT NULL AND a.job_owner = '1892'
       ) ipc ON a.lotno = ipc.lotno
   LEFT JOIN 
       (
@@ -205,20 +205,21 @@ module.exports = {
               prod_order1
   
       ) ccp on a.prod_order = ccp.prod_order1
-  WHERE date_format(a.tgl, '%Y') = '2023'
   GROUP BY a.tgl, a.lotno, a.prod_order, a.product, a.prod_start
   ORDER BY a.tgl DESC
-  LIMIT 24
+  LIMIT 15
             `);
-      res.status(200).send({
+
+      return res.status(200).json({
         message: "Get data success",
         data: query[0],
       });
     } catch (error) {
       console.log(error);
-      res.status(500).send({
+      res.status(500).json({
         message: "Get data failed",
         data: [],
+        error: error.message
       });
     }
   },
@@ -253,7 +254,7 @@ LEFT JOIN
         SELECT
             lotno,
             CASE
-                WHEN (b.name = 'ALVIN JAUHAR AL KHOIR') THEN 0
+                WHEN (a.job_owner = '1255') THEN 0
                 ELSE -1
             END AS simpulan
         FROM
@@ -261,14 +262,14 @@ LEFT JOIN
         JOIN
         aio_iot_oci1.v_employee b ON a.job_owner = b.nik
         WHERE 
-            a.tgl_proses IS NOT NULL AND b.name = 'ALVIN JAUHAR AL KHOIR'
+            a.tgl_proses IS NOT NULL AND a.job_owner = '1255'
     ) mikro ON a.lotno = mikro.lotno
 LEFT JOIN 
     (
         SELECT
             lotno,
             CASE
-                WHEN (b.name = 'HARY AGUSTIAWAN') THEN 0
+                WHEN (a.job_owner = '1892') THEN 0
                 ELSE -1
             END AS simpulan
         FROM
@@ -276,7 +277,7 @@ LEFT JOIN
         JOIN
         aio_iot_oci1.v_employee b ON a.job_owner = b.nik
         WHERE 
-            a.tgl_proses IS NOT NULL AND b.name = 'HARY AGUSTIAWAN'
+            a.tgl_proses IS NOT NULL AND a.job_owner = '1892'
     ) ipc ON a.lotno = ipc.lotno
 left join 
 	(
@@ -426,10 +427,9 @@ GROUP BY
 
 		
 	) ccp on a.prod_order = ccp.prod_order2
-where date_format(a.tgl, '%Y') = '2023'
 group by a.lotno
 order by a.tgl DESC
-limit 24
+limit 15
             `);
       res.status(200).send({
         message: "Get data success",
@@ -553,7 +553,7 @@ left join
 	) capa on mp.prod_order = capa.pro
 GROUP BY mp.prod_order
 order by mp.tgl desc
-limit 24
+limit 15
     `);
 
     res.status(200).send({
@@ -638,7 +638,7 @@ limit 24
 	from tr_perilisan_h
 	group by prod_order 
 	order by prod_start desc 
-	limit 20
+	limit 15
              `);
  
          // oci2
@@ -654,7 +654,7 @@ limit 24
          from tr_perilisan_h
          group by prod_order 
          order by prod_start desc 
-         limit 20
+         limit 15
              `);
  
          // fsb
@@ -670,7 +670,7 @@ limit 24
          from tr_perilisan_h
          group by prod_order 
          order by prod_start desc 
-         limit 20
+         limit 15
              `);
         }
 
