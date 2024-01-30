@@ -35,7 +35,7 @@ module.exports = {
           SELECT
               lotno,
               CASE
-                  WHEN (a.job_owner = '1255') THEN 0
+                  WHEN (a.job_owner = '1945') THEN 0
                   ELSE -1
               END AS simpulan
           FROM
@@ -43,7 +43,7 @@ module.exports = {
           JOIN
               v_employee b ON a.job_owner = b.nik
           WHERE 
-              a.tgl_proses IS NOT NULL AND a.job_owner = '1255'
+              a.tgl_proses IS NOT NULL AND a.job_owner = '1945'
       ) mikro ON a.lotno = mikro.lotno
   LEFT JOIN 
       (
@@ -254,7 +254,7 @@ LEFT JOIN
         SELECT
             lotno,
             CASE
-                WHEN (a.job_owner = '1255') THEN 0
+                WHEN (a.job_owner = '1945') THEN 0
                 ELSE -1
             END AS simpulan
         FROM
@@ -262,7 +262,7 @@ LEFT JOIN
         JOIN
         aio_iot_oci1.v_employee b ON a.job_owner = b.nik
         WHERE 
-            a.tgl_proses IS NOT NULL AND a.job_owner = '1255'
+            a.tgl_proses IS NOT NULL AND a.job_owner = '1945'
     ) mikro ON a.lotno = mikro.lotno
 LEFT JOIN 
     (
