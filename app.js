@@ -7,7 +7,6 @@ var cors = require('cors');
 var bodyParser  = require('body-parser');
 const { spawn } = require('child_process');
 require('./bot/calms_bot');
-require('./bot/bpd_bot');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
